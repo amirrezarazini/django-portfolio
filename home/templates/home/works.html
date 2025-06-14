@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6); /* رنگ نیمه شفاف مشکی */
+            z-index: 1040; /* کمتر از عکس بزرگ (1050) */
+            display: none; /* اول مخفی */
+        }
+
+        .gallery-grid__image-wrap {
+            position: relative;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            overflow: hidden; /* فقط وقتی غیرفعال است */
+        }
+
+        .gallery-grid__image-wrap.active {
+            overflow: visible; /* برای بزرگ شدن عکس */
+            z-index: 1049; /* زیر عکس */
+        }
+
+        .gallery-grid__image-wrap:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-grid__image {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.4s ease, filter 0.3s ease;
+            filter: none; /* مطمئن شو تار نیست */
+        }
+
+
+        .gallery-grid__image-wrap.active .gallery-grid__image {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%) scale(1);
+            z-index: 1050; /* بالاتر از overlay */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            cursor: default;
+            background: white;
+            filter: none; /* مطمئن شو تار نیست */
+        }
+
+
+        /* تار شدن بقیه صفحه هنگام نمایش تصویر */
+        body.modal-open::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+        }
+
+        /* دکمه بستن */
+        .close-btn {
+            position: fixed;
+            top: 10vh;
+            right: 5vw;
+            z-index: 1100;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border: none;
+            font-size: 2rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .gallery-grid__image-wrap.active .close-btn {
+            display: flex;
+        }
+
+    </style>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader__wrap">
+            <div class="circle-pulse">
+                <div class="circle-pulse__1"></div>
+                <div class="circle-pulse__2"></div>
+            </div>
+            <div class="preloader__progress"><span></span></div>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="container">
+            <div class="row sticky-parent">
+                <!-- Sidebar nav -->
+                <aside class="col-12 col-md-12 col-lg-2">
+                    <div class="sidebar box sticky-column">
+                        <ul class="nav">
+                            <li class="nav__item">
+                                <a href="{% url 'home:about' %}"><i class="icon-user"></i>درباره ی من</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:resume' %}"><i class="icon-file-text"></i>رزومه</a>
+                            </li>
+                            <li class="nav__item">
+                                <a class="active" href="{% url 'home:work' %}"><i class="icon-codesandbox"></i>کارها</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:blog' %}"><i class="icon-book-open"></i>وبلاگ</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
+                            </li>
+
+                            {% if user.is_authenticated %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
+                                </li>
+                            {% else %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:login' %}"><i class="icon-log-in"></i>ورود</a>
+                                </li>
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:register' %}"><i
+                                            class="icon-user-plus"></i>ثبت نام</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Content -->
+                <div class="col-12 col-md-12 col-lg-10">
+                    <div class="box box-content">
+                        <div class="pb-2">
+                            <h1 class="title title--h1 first-title title__separate">نمونه کارها</h1>
+                        </div>
+
+                        <!-- Filter -->
+                        <div class="select">
+                            <span class="placeholder">انتخاب دسته بندی</span>
+                            <ul class="filter">
+                                <li class="filter__item">دسته بندی</li>
+                                <li class="filter__item active" data-filter="*">
+                                    <a class="filter__link active" href="#filter">همه</a>
+                                </li>
+                                {% for cat in categories %}
+                                    <li class="filter__item" data-filter=".category-{{ cat.slug }}">
+                                        <a class="filter__link" href="#filter">{{ cat.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <input type="hidden" name="changemetoo"/>
+                        </div>
+
+                        <!-- Gallery -->
+                        <div class="gallery-grid js-grid-row js-filter-container">
+                            <div class="gutter-sizer"></div>
+                            {% for work in works %}
+                                <figure class="gallery-grid__item category-{{ work.category.slug }}">
+                                    <div class="gallery-grid__image-wrap">
+                                        <img class="gallery-grid__image cover lazyload" src="{{ work.image.url }}"
+                                             alt="{{ work.title }}"/>
+                                        <button class="close-btn" aria-label="بستن تصویر">&times;</button>
+                                    </div>
+
+                                    <figcaption class="gallery-grid__caption">
+                                        <h4 class="title title--h6 gallery-grid__title">{{ work.title }}</h4>
+                                        <span class="gallery-grid__category">{{ work.category.name }}</span>
+                                    </figcaption>
+                                </figure>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <footer class="footer">Crafted by AmirReza - Full-Stack Web Developer</footer>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="overlay"></div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="imageModalLabel">نمایش تصویر</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <img src="" alt="تصویر" class="img-fluid rounded-bottom"/>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">بازگشت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-to-top"></div>
+    <!-- SVG masks -->
+    <svg class="svg-defs">
+        <clipPath id="avatar-box">
+            <path d="M1.85379 38.4859C2.9221 18.6653 18.6653 2.92275 38.4858 1.85453 56.0986.905299 77.2792 0 94 0c16.721 0 37.901.905299 55.514 1.85453 19.821 1.06822 35.564 16.81077 36.632 36.63137C187.095 56.0922 188 77.267 188 94c0 16.733-.905 37.908-1.854 55.514-1.068 19.821-16.811 35.563-36.632 36.631C131.901 187.095 110.721 188 94 188c-16.7208 0-37.9014-.905-55.5142-1.855-19.8205-1.068-35.5637-16.81-36.63201-36.631C.904831 131.908 0 110.733 0 94c0-16.733.904831-37.9078 1.85379-55.5141z"/>
+        </clipPath>
+        <clipPath id="avatar-hexagon">
+            <path d="M0 27.2891c0-4.6662 2.4889-8.976 6.52491-11.2986L31.308 1.72845c3.98-2.290382 8.8697-2.305446 12.8637-.03963l25.234 14.31558C73.4807 18.3162 76 22.6478 76 27.3426V56.684c0 4.6805-2.5041 9.0013-6.5597 11.3186L44.4317 82.2915c-3.9869 2.278-8.8765 2.278-12.8634 0L6.55974 68.0026C2.50414 65.6853 0 61.3645 0 56.684V27.2891z"/>
+        </clipPath>
+    </svg>
+{% endblock %}
+{% block js %}
+    <script>
+        const overlay = document.getElementById('overlay');
+
+        document.querySelectorAll('.gallery-grid__image-wrap').forEach(function (wrapper) {
+            const img = wrapper.querySelector('.gallery-grid__image');
+            const closeBtn = wrapper.querySelector('.close-btn');
+
+            img.addEventListener('click', function () {
+                // غیر فعال کردن همه عکس‌های باز شده
+                document.querySelectorAll('.gallery-grid__image-wrap.active').forEach(function (el) {
+                    el.classList.remove('active');
+                });
+
+                wrapper.classList.add('active');
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    wrapper.classList.remove('active');
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+
+        // بستن تصویر با کلیک روی پس‌زمینه (overlay)
+        overlay.addEventListener('click', function () {
+            document.querySelectorAll('.gallery-grid__image-wrap.active').forEach(function (wrapper) {
+                wrapper.classList.remove('active');
+            });
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+        });
+    </script>
+    <!-- JavaScripts -->
+    <script src="{% static 'assets/js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins.min.js' %}"></script>
+    <script src="{% static 'assets/js/common.js' %}"></script>
+    <script src="{% static 'assets/demo/plugins-demo.js' %}"></script>
+{% endblock %}

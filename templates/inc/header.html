@@ -1,0 +1,41 @@
+{% load static %}
+<main class="main">
+    <div class="container gutter-top">
+        <!-- Header Image -->
+        <div class="header-image">
+            <div class="js-parallax"
+                 style="background-image: url({% static 'assets/img/pexels-didsss-3587347.jpg' %});"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="header box">
+            <div class="header__left">
+                <div class="header__photo">
+                    <img class="header__photo-img"
+                         style="width: 100%;height: 100%;object-fit: cover;object-position: center"
+                         src="{{ about.image.url }}" alt="Amirreza Razini">
+                </div>
+                <div class="header__base-info">
+                    <h4 class="title titl--h4">{{ about.title }}</h4>
+                    <div class="status">{{ about.profession }}</div>
+                    <ul class="header__social">
+                        <li><a href="https://github.com/amirrezarazini"><i class="font-icon icon-github"></i></a>
+                        </li>
+                        <li><a href="https://www.instagram.com/amirrzn_/?next=%2F&hl=en"><i
+                                class="font-icon icon-instagram1"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="header__right">
+                <ul class="header__contact">
+                    <li><span class="overhead">ایمیل</span>{{ about.email }}</li>
+                    <li><span class="overhead">تلفن</span>{{ about.phone }}</li>
+                </ul>
+                <ul class="header__contact">
+                    <li><span class="overhead">تولد</span>{{ about.birthday }}</li>
+                    <li><span class="overhead">مکان تولد</span>{{ about.location }}</li>
+                </ul>
+            </div>
+        </header>
+    </div>
+</main>

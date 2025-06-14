@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    {% include 'inc/messages.html' %}
+    <main class="main">
+        <div class="container">
+            <div class="row sticky-parent">
+                <!-- Sidebar nav -->
+                <aside class="col-12 col-md-12 col-lg-2">
+                    <div class="sidebar box sticky-column">
+                        <ul class="nav">
+                            <li class="nav__item">
+                                <a href="{% url 'home:about' %}"><i class="icon-user"></i>درباره ی ما</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:resume' %}"><i class="icon-file-text"></i>رزومه</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:work' %}"><i class="icon-codesandbox"></i>کارها</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:blog' %}"><i class="icon-book-open"></i>وبلاگ</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
+                            </li>
+
+                            {% if user.is_authenticated %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
+                                </li>
+                            {% else %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:login' %}"><i class="icon-log-in"></i>ورود</a>
+                                </li>
+                                <li class="nav__item">
+                                    <a class="active" href="{% url 'accounts:register' %}"><i
+                                            class="icon-user-plus"></i>ثبت نام</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- فرم ثبت‌نام -->
+                <div class="col-12 col-md-12 col-lg-10 d-flex justify-content-center align-items-start pt-5"
+                     style="min-height: unset;">
+                    <div class="card shadow-lg p-4"
+                         style="width: 100%; max-width: 500px; border-radius: 20px; backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.75); border: 1px solid rgba(255,255,255,0.25);">
+                        <h3 class="text-center mb-4 fw-bold">ثبت ‌نام حساب کاربری</h3>
+                        <form method="post" action="{% url 'accounts:register' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">نام کاربری</label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">ایمیل</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">رمز عبور</label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="{{ form.password_confirm.id_for_label }}" class="form-label">تکرار رمز
+                                    عبور</label>
+                                {{ form.password_confirm }}
+                                {% if form.password_confirm.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password_confirm.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4 text-center">
+                                <label class="form-label d-block fw-semibold">تصویر پروفایل</label>
+                                <label for="id_image" class="btn btn-outline-primary py-1 px-3 fw-bold d-flex align-items-center justify-content-center"
+                                       style="font-size: 0.9rem;">
+                                    انتخاب تصویر پروفایل
+                                </label>
+                                <input type="file" name="image" id="id_image" style="display: none;">
+                                <div id="selected-file" class="mt-2 text-muted small">فایلی انتخاب نشده</div>
+                                {% if form.image.errors %}
+                                    <div class="text-danger small mt-1">{{ form.image.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold">ثبت‌نام</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% block js %}
+        <script>
+            const inputFile = document.getElementById('id_image');
+            const fileNameDisplay = document.getElementById('selected-file');
+
+            inputFile.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    fileNameDisplay.textContent = `فایل انتخاب شده: ${this.files[0].name}`;
+                } else {
+                    fileNameDisplay.textContent = 'فایلی انتخاب نشده';
+                }
+            });
+        </script>
+        <script src="{% static 'assets/js/jquery-3.4.1.min.js' %}"></script>
+        <script src="{% static 'assets/js/plugins.min.js' %}"></script>
+        <script src="{% static 'assets/js/common.js' %}"></script>
+        <script src="{% static 'assets/demo/plugins-demo.js' %}"></script>
+    {% endblock %}
+{% endblock %}

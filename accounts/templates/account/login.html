@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    {% include 'inc/messages.html' %}
+    <!-- بخش نمایش پیام‌ها -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main class="main">
+        <div class="container">
+            <div class="row sticky-parent">
+                <!-- Sidebar nav -->
+                <aside class="col-12 col-md-12 col-lg-2">
+                    <div class="sidebar box sticky-column">
+                        <ul class="nav">
+                            <li class="nav__item">
+                                <a href="{% url 'home:about' %}"><i class="icon-user"></i>درباره ی ما</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:resume' %}"><i class="icon-file-text"></i>رزومه</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:work' %}"><i class="icon-codesandbox"></i>کارها</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:blog' %}"><i class="icon-book-open"></i>وبلاگ</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
+                            </li>
+
+                            {% if user.is_authenticated %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
+                                </li>
+                            {% else %}
+                                <li class="nav__item">
+                                    <a class="active" href="{% url 'accounts:login' %}"><i class="icon-log-in"></i>ورود</a>
+                                </li>
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:register' %}"><i class="icon-user-plus"></i>ثبت نام</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- فرم ورود -->
+                <div class="col-12 col-md-12 col-lg-10 d-flex justify-content-center align-items-start pt-5"
+                     style="min-height: unset;">
+                    <div class="card shadow-lg p-4"
+                         style="width: 100%; max-width: 420px; border-radius: 20px; backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.75); border: 1px solid rgba(255,255,255,0.25);">
+                        <h3 class="text-center mb-4 fw-bold">ورود به حساب کاربری</h3>
+                        <form method="post" action="{% url 'accounts:login' %}">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+
+                            <div class="mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label">نام کاربری</label>
+                                {{ form.username }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="{{ form.password.id_for_label }}" class="form-label">رمز عبور</label>
+                                {{ form.password }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">ورود</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    {% block js %}
+        <script src="{% static 'assets/js/jquery-3.4.1.min.js' %}"></script>
+        <script src="{% static 'assets/js/plugins.min.js' %}"></script>
+        <script src="{% static 'assets/js/common.js' %}"></script>
+        <script src="{% static 'assets/demo/plugins-demo.js' %}"></script>
+    {% endblock %}
+{% endblock %}

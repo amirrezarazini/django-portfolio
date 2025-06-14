@@ -1,0 +1,57 @@
+<style>
+    .btn-close {
+        box-sizing: content-box;
+        width: 1em;
+        height: 1em;
+        padding: 0.25em;
+        color: #000;
+        background: transparent url("media/images-style/close-x-svgrepo-com.svg") center/1em auto no-repeat;
+        border: 0;
+        border-radius: 0.375rem;
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .btn-close:hover {
+        opacity: 0.75;
+    }
+
+    .alert {
+        position: relative;
+        transition: opacity 0.5s ease;
+    }
+
+    .alert.fade-out {
+        opacity: 0;
+    }
+</style>
+
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if success %}
+    <div class="alert alert-success">
+        پیام شما با موفقیت ارسال شد!
+    </div>
+{% endif %}
+
+<script>
+    // اسکریپت ساده برای بسته شدن پیام با دکمه ضربدر
+    document.querySelectorAll('.btn-close').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const alert = this.closest('.alert');
+            if (alert) {
+                alert.classList.add('fade-out'); // اضافه کردن افکت محو شدن
+                setTimeout(() => alert.remove(), 500); // حذف بعد از محو
+            }
+        });
+    });
+</script>

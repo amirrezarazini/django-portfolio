@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader__wrap">
+            <div class="circle-pulse">
+                <div class="circle-pulse__1"></div>
+                <div class="circle-pulse__2"></div>
+            </div>
+            <div class="preloader__progress"><span></span></div>
+        </div>
+    </div>
+    <!-- Scroll Indicator -->
+    <div class="scroll-line"></div>
+
+    <main class="main">
+        <div class="container">
+            <div class="row sticky-parent">
+                <!-- Sidebar nav -->
+                <aside class="col-12 col-md-12 col-lg-2">
+                    <div class="sidebar box sticky-column">
+                        <ul class="nav">
+                            <li class="nav__item">
+                                <a href="{% url 'home:about' %}"><i class="icon-user"></i>درباره ی من</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:resume' %}"><i class="icon-file-text"></i>رزومه</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:work' %}"><i class="icon-codesandbox"></i>کارها</a>
+                            </li>
+                            <li class="nav__item">
+                                <a class="active" href="{% url 'home:blog' %}"><i class="icon-book-open"></i>وبلاگ</a>
+                            </li>
+                            <li class="nav__item">
+                                <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
+                            </li>
+
+                            {% if user.is_authenticated %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
+                                </li>
+                            {% else %}
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:login' %}"><i class="icon-log-in"></i>ورود</a>
+                                </li>
+                                <li class="nav__item">
+                                    <a href="{% url 'accounts:register' %}"><i
+                                            class="icon-user-plus"></i>ثبت نام</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </aside>
+
+                <!-- Content -->
+                <div class="col-12 col-md-12 col-lg-10">
+                    <div class="box box-content">
+                        <!-- Post -->
+                        <div class="pb-3">
+                            <header class="header-post">
+                                <div class="header-post__image-wrap">
+                                    <img class="cover lazyload" src="{{ post.image.url }}" data-zoom
+                                         alt="{{ post.title }}"/>
+                                </div>
+                                <h1 class="title title--h1">{{ post.title }}</h1>
+                                <div class="caption-post">
+                                    <p>{{ post.description }}</p>
+                                </div>
+                            </header>
+                            <div class="caption-post">
+                                <p>{{ post.body|safe }}</p>
+                            </div>
+                            <div class="gallery-post">
+                                <div class="gallery-post__caption">کار توسط امیررضا رازینی</div>
+                            </div>
+                            <footer class="footer-post">
+                                <a class="footer-post__share" href="https://github.com/amirrezarazini"><i
+                                        class="font-icon icon-github"></i><span>گیت</span></a>
+                                <a class="footer-post__share" href="https://www.instagram.com/amirrzn_/?next=%2F&hl=en"><i
+                                        class="font-icon icon-instagram"></i><span>اینستاگرام</span></a>
+                            </footer>
+                        </div>
+                        <div class="box-inner box-inner--rounded">
+                            <h2 class="title title--h3">نظرات <span class="color--light">({{ comments|length }})</span>
+                            </h2>
+
+                            {% for comment in comments %}
+                                {% include 'inc/comment.html' with comment=comment %}
+                            {% empty %}
+                                <p>هنوز نظری ثبت نشده است.</p>
+                            {% endfor %}
+                            <form method="post" enctype="multipart/form-data" class="comment-form">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label for="{{ form.body.id_for_label }}" class="form-label">متن نظر</label>
+                                    <textarea name="{{ form.body.name }}" id="{{ form.body.id_for_label }}"
+                                              class="form-control" rows="4"
+                                              placeholder="نظر خود را بنویسید...">{{ form.body.value|default_if_none:"" }}</textarea>
+                                </div>
+
+                                {{ form.image }}
+
+                                <!-- این input مخفی برای parent است، حتما باید باشه -->
+                                {{ form.parent }}
+
+                                <button type="submit" class="btn btn-primary"><i class="font-icon icon-send"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                    <footer class="footer">Crafted by AmirReza - Full-Stack Web Developer</footer>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="back-to-top"></div>
+
+    <!-- SVG masks -->
+    <svg class="svg-defs">
+        <clipPath id="avatar-box">
+            <path d="M1.85379 38.4859C2.9221 18.6653 18.6653 2.92275 38.4858 1.85453 56.0986.905299 77.2792 0 94 0c16.721 0 37.901.905299 55.514 1.85453 19.821 1.06822 35.564 16.81077 36.632 36.63137C187.095 56.0922 188 77.267 188 94c0 16.733-.905 37.908-1.854 55.514-1.068 19.821-16.811 35.563-36.632 36.631C131.901 187.095 110.721 188 94 188c-16.7208 0-37.9014-.905-55.5142-1.855-19.8205-1.068-35.5637-16.81-36.63201-36.631C.904831 131.908 0 110.733 0 94c0-16.733.904831-37.9078 1.85379-55.5141z"/>
+        </clipPath>
+        <clipPath id="avatar-hexagon">
+            <path d="M0 27.2891c0-4.6662 2.4889-8.976 6.52491-11.2986L31.308 1.72845c3.98-2.290382 8.8697-2.305446 12.8637-.03963l25.234 14.31558C73.4807 18.3162 76 22.6478 76 27.3426V56.684c0 4.6805-2.5041 9.0013-6.5597 11.3186L44.4317 82.2915c-3.9869 2.278-8.8765 2.278-12.8634 0L6.55974 68.0026C2.50414 65.6853 0 61.3645 0 56.684V27.2891z"/>
+        </clipPath>
+    </svg>
+{% endblock %}
+{% block js %}
+    <!-- JavaScripts -->
+    <script src="{% static 'assets/js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins.min.js' %}"></script>
+    <script src="{% static 'assets/js/common.js' %}"></script>
+
+    <script>
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const parentId = this.getAttribute('data-parent-id');
+                // مقدار parent را در input مخفی بگذار
+                document.querySelector('input[name="parent"]').value = parentId;
+                // فوکوس روی textarea فرم نظر
+                document.querySelector('textarea[name="body"]').focus();
+            });
+        });
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const commentId = this.getAttribute('data-comment-id');
+                const btn = this;  // ذخیره ارجاع دکمه برای استفاده داخل then
+                fetch(`/comment/${commentId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Accept': 'application/json',
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const icon = btn.querySelector('i');
+                        const countSpan = btn.querySelector('.like-count');
+                        if (data.liked) {
+                            icon.classList.add('liked');
+                        } else {
+                            icon.classList.remove('liked');
+                        }
+                        countSpan.textContent = data.total_likes;
+                    });
+            });
+        });
+    </script>
+{% endblock %}

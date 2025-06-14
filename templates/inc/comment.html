@@ -1,0 +1,49 @@
+{% load static %}
+<div class="comment-box" style="margin-right: {{ level|default:0|add:"30" }}px;">
+    <div class="comment-box__inner">
+        <svg class="avatar avatar--60" viewBox="0 0 84 84">
+            <g class="avatar__hexagon">
+                {% if comment.user.profile.image %}
+                    <image href="{{ comment.user.profile.image.url }}" height="100%" width="100%"/>
+                {% else %}
+                    <image href="{% static 'assets/img/default-avatar.jpg' %}" height="100%" width="100%"/>
+                {% endif %}
+            </g>
+        </svg>
+        <div class="comment-box__body">
+            <h5 class="comment-box__details">
+                <span>{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                <span class="comment-box__details-date">{{ comment.created|timesince }} پیش</span>
+                {% if user.is_authenticated and comment.user == user %}
+                    <a href="{% url 'home:comment-delete' comment.pk %}"
+                       class="btn btn-sm btn-danger text-center d-flex align-items-center" style="margin-right: 10px;">حذف</a>
+                {% endif %}
+            </h5>
+            <p>{{ comment.body|linebreaks }}</p>
+
+            {% if comment.image %}
+                <img src="{{ comment.image.url }}" style="max-width: 200px; border-radius: 10px;"/>
+            {% endif %}
+
+            <ul class="comment-box__footer">
+                <li>
+                    <a href="#" class="like-btn" data-comment-id="{{ comment.id }}">
+                        <i class="font-icon icon-like-fill {% if user in comment.likes.all %}liked{% endif %}"></i>
+                        <span class="like-count">{{ comment.total_likes }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-parent-id="{{ comment.id }}" class="reply-btn">
+                        <i class="font-icon icon-reply"></i> <span>پاسخ</span>
+                    </a>
+                </li>
+            </ul>
+
+
+            {# اینجا ریپلای‌های این کامنت رو بازگشتی نمایش بده #}
+            {% for reply in comment.replies.all %}
+                {% include 'inc/comment.html' with comment=reply level=level|default:0|add:1 %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
