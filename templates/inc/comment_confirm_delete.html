@@ -1,21 +1,19 @@
 {% extends "base.html" %}
-
-{% block title %}حذف کامنت{% endblock %}
-
 {% block content %}
     <div class="container">
         <h2>آیا مطمئن هستید که می‌خواهید این کامنت را حذف کنید؟</h2>
         <p><strong>متن کامنت:</strong> {{ object.body|linebreaks }}</p>
         <form method="post" class="d-flex flex-column align-items-center gap-3">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger px-4 py-2 text-center mb-3 d-flex align-items-center" style="width: 100px;">
+            <button type="submit" class="btn btn-danger px-4 py-2 text-center mb-3 d-flex align-items-center"
+                    style="width: 100px;">
                 حذف
             </button>
-            <a href="{% url 'home:single-post' pk=object.blogpost.pk %}" class="btn btn-secondary text-center d-flex align-items-center px-4 py-2"
+            <a href="{% url 'home:single-post' pk=object.blogpost.pk %}"
+               class="btn btn-secondary text-center d-flex align-items-center px-4 py-2"
                style="width: 100px; text-align: center;">
                 انصراف
             </a>
         </form>
-
     </div>
 {% endblock %}

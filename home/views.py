@@ -21,6 +21,7 @@ class AboutView(View):
         comments = Comment.objects.all()
         return render(request, 'home/about.html', {'about': about, 'hobbies': hobbies, 'comments': comments})
 
+
 class ResumeView(View):
     def get(self, request):
         about = About.objects.first()
@@ -44,6 +45,7 @@ class BlogView(View):
         about = About.objects.first()
         posts = BlogPost.objects.all()
         return render(request, 'home/blog.html', {'about': about, 'posts': posts})
+
 
 class ContactView(View):
     def get(self, request):
@@ -121,3 +123,13 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.user
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        print("Comment to delete:", obj)
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['about'] = About.objects.first()
+        return context
