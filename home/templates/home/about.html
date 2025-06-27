@@ -34,6 +34,9 @@
                                 <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
                             </li>
 
+                            <!-- فاصله دهنده -->
+                            <li class="nav__item my-3"></li>
+
                             {% if user.is_authenticated %}
                                 <li class="nav__item">
                                     <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
@@ -43,11 +46,11 @@
                                     <a href="{% url 'accounts:login' %}"><i class="icon-log-in"></i>ورود</a>
                                 </li>
                                 <li class="nav__item">
-                                    <a href="{% url 'accounts:register' %}"><i class="icon-user-plus"></i>ثبت
-                                        نام</a>
+                                    <a href="{% url 'accounts:register' %}"><i class="icon-user-plus"></i>ثبت نام</a>
                                 </li>
                             {% endif %}
                         </ul>
+
                     </div>
                 </aside>
 
@@ -156,7 +159,7 @@
                             </div>
                         </div>
                     </div>
-                        <footer class="footer">Crafted by AmirReza - Full-Stack Web Developer</footer>
+                    <footer class="footer">Crafted by AmirReza - Full-Stack Web Developer</footer>
                 </div>
             </div>
         </div>
