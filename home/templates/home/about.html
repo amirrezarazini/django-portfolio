@@ -33,19 +33,6 @@
                             <li class="nav__item">
                                 <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
                             </li>
-                            {% if user.is_authenticated %}
-                                <li class="nav__item">
-                                    <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
-                                </li>
-                            {% else %}
-                                <li class="nav__item">
-                                    <a href="{% url 'accounts:login' %}"><i class="icon-log-in"></i>ورود</a>
-                                </li>
-                                <li class="nav__item">
-                                    <a href="{% url 'accounts:register' %}"><i class="icon-user-plus"></i>ثبت
-                                        نام</a>
-                                </li>
-                            {% endif %}
                         </ul>
                     </div>
                 </aside>
@@ -154,8 +141,23 @@
                                 <div class="swiper-pagination"></div>
                             </div>
                         </div>
+                        <div class="auth-links" style="text-align:center; margin-top: 30px;">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'accounts:logout' %}" class="btn btn-outline-secondary">
+                                    <i class="icon-log-out"></i> خروج
+                                </a>
+                            {% else %}
+                                <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">
+                                    <i class="icon-log-in"></i> ورود
+                                </a>
+                                <a href="{% url 'accounts:register' %}" class="btn btn-outline-success">
+                                    <i class="icon-user-plus"></i> ثبت نام
+                                </a>
+                            {% endif %}
+                        </div>
+
                     </div>
-                        <footer class="footer">Crafted by AmirReza - Full-Stack Web Developer</footer>
+                    <footer class="footer">Crafted by AmirReza - Full-Stack Web Developer</footer>
                 </div>
             </div>
         </div>
