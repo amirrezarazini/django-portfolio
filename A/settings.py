@@ -25,7 +25,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-hlfo&&l^qe5c1=seb7!$dphy%g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['portfolio-app-r9vd.onrender.com']
+ALLOWED_HOSTS = ['django-2p1xsj.chbk.app']
+
 
 # Application definition
 
@@ -121,7 +122,6 @@ STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
