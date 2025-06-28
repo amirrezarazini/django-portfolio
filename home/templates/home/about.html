@@ -33,7 +33,6 @@
                             <li class="nav__item">
                                 <a href="{% url 'home:contact' %}"><i class="icon-book"></i>تماس با ما</a>
                             </li>
-
                             {% if user.is_authenticated %}
                                 <li class="nav__item">
                                     <a href="{% url 'accounts:logout' %}"><i class="icon-log-out"></i>خروج</a>
