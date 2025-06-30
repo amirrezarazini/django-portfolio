@@ -12,13 +12,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = [
-    'django-2p1xsj.chbk.app',
-    '127.0.0.1',
-    'localhost',
-    'raziniar.ir',
-    'www.raziniar.ir',
-]
+ALLOWED_HOSTS = ['raziniar.ir', 'www.raziniar.ir', '127.0.0.1', 'localhost']
+
 
 # Application definition
 INSTALLED_APPS = [
